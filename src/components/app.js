@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import fetchIssues from '../services/fetchIssues';
-import { Table, Icon, Loader } from 'semantic-ui-react';
+import { Table, Icon, Loader, Input, Dropdown } from 'semantic-ui-react';
 
 class App extends Component {
   state = {
     issues: null,
+    originalData: null,
     column: null,
     direction: null,
-    originalData: null,
+    searchText: '',
+    searchCategory: 'title'
   };
 
   componentDidMount() {
@@ -35,8 +37,34 @@ class App extends Component {
     }
   };
 
+  onSearch = (textValue, categoryValue) => {
+    let { issues, originalData } = this.state;
+    issues = originalData;
+    if (textValue !== "") {
+      switch(categoryValue) {
+        case "title":
+        case "state":
+          issues = originalData.filter(data => data[categoryValue].toLowerCase().includes(textValue));
+          break;
+        case "number":
+          issues = originalData.filter(data => data[categoryValue].toString().includes(textValue));
+          break;
+        case "labels":
+          issues = originalData.filter(data => (
+              data.labels.some(label => (
+                  label.name.toLowerCase().includes(textValue))
+              )
+          ));
+          break;
+        default:
+          break;
+      }
+    }
+    this.setState({ issues });
+  };
+
   render() {
-    const { issues, column, direction } = this.state;
+    const { issues, column, direction, searchText, searchCategory } = this.state;
     if (issues === null) {
       return (
         <div style={{ marginTop: 30, textAlign: 'center' }}>
@@ -50,6 +78,26 @@ class App extends Component {
         <h1 style={{ textAlign: 'center', marginBottom: 30 }}>
           React Issues
         </h1>
+        <div style={{ textAlign: "right" }}>
+          <Input
+            action={<Dropdown button basic floating options={[
+              { key: "number", text: "Number", value: "number" },
+              { key: "title", text: "Title", value: "title" },
+              { key: "labels", text: "Label", value: "labels" },
+              { key: "state", text: "State", value: "state" },
+            ]} defaultValue={searchCategory} onChange={(event, data) => {
+              this.setState({ searchCategory: data.value });
+              this.onSearch(searchText, data.value);
+            }} />}
+            icon="search"
+            iconPosition="left"
+            placeholder="Search..."
+            onChange={(event, data) => {
+              this.setState({ searchText: data.value });
+              this.onSearch(data.value, searchCategory);
+            }}
+          />
+        </div>
         <Table columns={6} sortable celled fixed>
           <Table.Header>
             <Table.Row>

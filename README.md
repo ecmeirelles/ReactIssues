@@ -6,3 +6,6 @@ A simple exercise which gets some React issues from its official repository and 
 2. `cd ReactIssues`
 3. `yarn install`
 4. `yarn start`
+
+
+![React Issues](https://github.com/ecmeirelles/ReactIssues/blob/master/react-issues.gif)

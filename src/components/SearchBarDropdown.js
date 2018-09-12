@@ -7,12 +7,14 @@ class SearchBarDropdown extends Component {
     searchCategory: "title"
   };
 
+  // Categories allowed to be searched through
   options = [
     { key: "number", text: "Number", value: "number" },
     { key: "title", text: "Title", value: "title" },
     { key: "labels", text: "Label", value: "labels" },
     { key: "state", text: "State", value: "state" }
   ];
+
 
   onSearch = (textValue, categoryValue) => {
     let { tempData, originalData, onChangeTempData } = this.props;
@@ -21,16 +23,19 @@ class SearchBarDropdown extends Component {
       switch (categoryValue) {
         case "title":
         case "state":
+          // Filter strings - lowercase used in order to avoid case sensitive search
           tempData = originalData.filter(data => (
             data[categoryValue].toLowerCase().includes(textValue)
           ));
           break;
         case "number":
+          // Filter integers
           tempData = originalData.filter(data => (
             data[categoryValue].toString().includes(textValue)
           ));
           break;
         case "labels":
+          // Filter through another array
           tempData = originalData.filter(data => (
             data.labels.some(label => (
               label.name.toLowerCase().includes(textValue))

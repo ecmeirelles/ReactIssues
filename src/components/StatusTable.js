@@ -17,11 +17,13 @@ class StatusTable extends Component {
         column: clickedColumn,
         direction: "ascending"
       });
+      // In the first time, do an ascending sort of numbers or dates
       onChangeStatuses(statuses.sort((a, b) => clickedColumn === "number"
         ? a.number - b.number
         : new Date(a[clickedColumn]) - new Date(b[clickedColumn]))
       )
     } else {
+      // Then, invert current direction and sort order
       this.setState({ direction: direction === "ascending" ? "descending" : "ascending" });
       onChangeStatuses(statuses.reverse());
     }
@@ -90,36 +92,37 @@ class StatusTable extends Component {
     }
     return (
       statuses.map(status => {
-      const positive = status.state.toLowerCase() === "open";
-      const negative = status.state.toLowerCase() === "close";
+        const positive = status.state.toLowerCase() === "open";
+        const negative = status.state.toLowerCase() === "close";
 
-      return (
-        <Table.Row key={status.id}>
-          <Table.Cell>
-            <a href={status.html_url} target="_blank"> #{ status.number } </a>
-          </Table.Cell>
-          <Table.Cell>
-            { status.title }
-          </Table.Cell>
-          <Table.Cell>
-            { new Date(status.created_at).toLocaleDateString() }
-          </Table.Cell>
-          <Table.Cell>
-            { new Date(status.updated_at).toLocaleDateString() }
-          </Table.Cell>
-          <Table.Cell>
-            { status.labels.map(label => (
-                <span className={"table--label"} key={label.id} style={{ backgroundColor: "#"+label.color }}>
-                { label.name }
-              </span>
-            ))}
-          </Table.Cell>
-          <Table.Cell positive={positive} negative={negative}>
-            <Icon name="attention" />
-            { status.state }
-          </Table.Cell>
-        </Table.Row>
-      )})
+        return (
+          <Table.Row key={status.id}>
+            <Table.Cell>
+              <a href={status.html_url} target="_blank"> #{ status.number } </a>
+            </Table.Cell>
+            <Table.Cell>
+              { status.title }
+            </Table.Cell>
+            <Table.Cell>
+              { new Date(status.created_at).toLocaleDateString() }
+            </Table.Cell>
+            <Table.Cell>
+              { new Date(status.updated_at).toLocaleDateString() }
+            </Table.Cell>
+            <Table.Cell>
+              { status.labels.map(label => (
+                  <span className={"table--label"} key={label.id} style={{ backgroundColor: "#"+label.color }}>
+                  { label.name }
+                </span>
+              ))}
+            </Table.Cell>
+            <Table.Cell positive={positive} negative={negative}>
+              <Icon name="attention" />
+              { status.state }
+            </Table.Cell>
+          </Table.Row>
+        )
+      })
     )
   }
 }

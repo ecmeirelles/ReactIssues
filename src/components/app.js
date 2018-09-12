@@ -5,6 +5,8 @@ import { Table, Icon, Loader } from 'semantic-ui-react';
 class App extends Component {
   state = {
     issues: null,
+    column: null,
+    direction: null,
     originalData: null,
   };
 
@@ -14,8 +16,27 @@ class App extends Component {
     });
   }
 
+  handleSort = clickedColumn => () => {
+    const { column, issues, direction } = this.state;
+
+    if (column !== clickedColumn) {
+      this.setState({
+        column: clickedColumn,
+        issues: clickedColumn === 'number'
+            ? issues.sort((a, b) => a.number - b.number)
+            : issues.sort((a, b) => new Date(a[clickedColumn]) - new Date(b[clickedColumn])),
+        direction: "ascending"
+      });
+    } else {
+      this.setState({
+        issues: issues.reverse(),
+        direction: direction === "ascending" ? "descending" : "ascending",
+      });
+    }
+  };
+
   render() {
-    const { issues } = this.state;
+    const { issues, column, direction } = this.state;
     if (issues === null) {
       return (
         <div style={{ marginTop: 30, textAlign: 'center' }}>
@@ -32,16 +53,25 @@ class App extends Component {
         <Table columns={6} sortable celled fixed>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>
+              <Table.HeaderCell
+                  sorted={column === "number" ? direction : null}
+                  onClick={this.handleSort("number")}
+              >
                 Issue Number
               </Table.HeaderCell>
               <Table.HeaderCell>
                 Title
               </Table.HeaderCell>
-              <Table.HeaderCell>
+              <Table.HeaderCell
+                  sorted={column === "created_at" ? direction : null}
+                  onClick={this.handleSort("created_at")}
+              >
                 Created At
               </Table.HeaderCell>
-              <Table.HeaderCell>
+              <Table.HeaderCell
+                  sorted={column === "updated_at" ? direction : null}
+                  onClick={this.handleSort("updated_at")}
+              >
                 Updated At
               </Table.HeaderCell>
               <Table.HeaderCell>
